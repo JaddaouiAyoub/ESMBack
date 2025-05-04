@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Bon de Commande</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            margin: 40px;
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 60px;
+        }
+
+        .title {
+            text-align: center;
+            margin-top: 20px;
+            color: #0e3a66;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #e2ecf9;
+            color: #0e3a66;
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+
+        td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 10px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+<!--    <img th:src="@{logo.jpeg}" alt="Logo" class="logo" />-->
+    <div>
+        <p><strong>Date :</strong> <span th:text="${commande.dateCreation}"></span></p>
+        <p><strong>Code commande :</strong> <span th:text="${commande.codeCommande}"></span></p>
+        <p><strong>Statut :</strong> <span th:text="${commande.statut}"></span></p>
+    </div>
+</div>
+
+<h2 class="title">Bon de Commande</h2>
+
+<p><strong>Fournisseur :</strong>
+    <span th:text="${commande.fournisseur.code} + ' - ' + ${commande.fournisseur.raisonSociale}"></span>
+</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>Produit</th>
+        <th>Quantité</th>
+        <th>Prix Unitaire</th>
+        <th>Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="ligne : ${commande.lignes}">
+        <td th:text="${ligne.nomProduit}">Produit</td>
+        <td th:text="${ligne.quantiteCommandee}">10</td>
+        <td th:text="${ligne.prixUnitaire}">120.00</td>
+        <td th:text="${ligne.quantiteCommandee * ligne.prixUnitaire}">1200.00</td>
+    </tr>
+    </tbody>
+</table>
+
+<p class="total">Montant total : <span th:text="${commande.montantTotal}"></span> MAD</p>
+
+<div class="footer">
+    Ce bon de commande est généré automatiquement par EasyStock Maroc.<br />
+    Merci pour votre collaboration.
+</div>
+
+</body>
+</html>
