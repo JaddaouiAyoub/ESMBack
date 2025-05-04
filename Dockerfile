@@ -5,6 +5,7 @@ WORKDIR /app
 # Copier le pom.xml et les autres fichiers nécessaires à la construction de l'application
 COPY pom.xml ./
 COPY src ./src
+EXPOSE 8080
 
 # Exécuter Maven pour construire l'application sans tests
 RUN mvn clean package -DskipTests
