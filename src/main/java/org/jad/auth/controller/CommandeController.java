@@ -41,7 +41,7 @@ public class CommandeController {
         Fournisseur fournisseur = fournisseurRepository.findById(fournisseurId)
                 .orElseThrow(() -> new RuntimeException("Fournisseur non trouvé"));
 
-        if (produit.getQuantiteStock() > 0) {
+        if (produit.getQuantiteStock() > produit.getReorderPoint()) {
             throw new RuntimeException("Stock disponible, pas besoin de commander.");
         }
 
