@@ -98,7 +98,7 @@ public class ProduitService {
         produit.setFournisseur(fournisseur);
         Produit savedProduit = produitRepository.save(produit);
         // 🔁 Si le stock est nul, on génère une commande automatique
-        if (produit.getQuantiteStock() == 0) {
+        if (produit.getQuantiteStock() <= produit.getReorderPoint()) {
             commandeService.creerCommandeAutomatique(produit, fournisseur);
         }
         return ProduitMapper.toDTO(savedProduit);
