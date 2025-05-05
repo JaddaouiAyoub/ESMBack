@@ -96,7 +96,7 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:4200", "https://esm-aj.vercel.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200", "https://esm-aj.vercel.app","https://esm-aj.vercel.app/"));
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

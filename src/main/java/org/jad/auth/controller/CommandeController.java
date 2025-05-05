@@ -70,6 +70,11 @@ public class CommandeController {
     public List<CommandeDTO> getCommandesConfirmees() {
         return commandeService.getCommandesConfirmeesDTO();
     }
+    @GetMapping("/commandes/recues-partiellement")
+    public List<CommandeDTO> getCommandesRecuesPartiellement() {
+        return commandeService.getCommandesPartiellementRecues();
+    }
+
 
     /**
      * PUT : Modifier les lignes d'une commande (quantité, date) et passer en EN_COURS
@@ -88,6 +93,9 @@ public class CommandeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur inattendue est survenue");
         }
     }
+
+
+
     @PostMapping("/lignes/{id}/reception")
     public ResponseEntity<?> receptionnerLigneCommande(
             @PathVariable Long id,

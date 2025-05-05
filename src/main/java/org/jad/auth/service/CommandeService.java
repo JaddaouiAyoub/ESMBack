@@ -95,6 +95,14 @@ public class CommandeService {
                 .map(CommandeDTO::new)
                 .collect(Collectors.toList());
     }
+    public List<CommandeDTO> getCommandesPartiellementRecues() {
+        List<Commande> commandes = commandeRepository.findByStatut(StatutCommande.PARTIELLEMENT_RECUE);
+
+        return commandes.stream()
+                .map(CommandeDTO::new)
+                .collect(Collectors.toList());
+    }
+
 
 
     /**
@@ -155,17 +163,34 @@ public class CommandeService {
         if (quantiteRecue <= 0 || quantiteRecue > ligne.getQuantiteCommandee()) {
             throw new IllegalArgumentException("Quantité reçue invalide.");
         }
+        // Calculer la quantité totale déjà reçue via les sous-lignes
+        int totalSousLignes = ligne.getSousLignes() != null
+                ? ligne.getSousLignes().stream().mapToInt(SousLigneCommande::getQuantiteRecue).sum()
+                : 0;
 
+        int totalAvecNouvelle = totalSousLignes + quantiteRecue;
+
+        Commande commande = ligne.getCommande();
+
+        if (totalAvecNouvelle > ligne.getQuantiteCommandee()) {
+            throw new IllegalArgumentException("La quantité totale reçue dépasse la quantité commandée.");
+        }
+        commande.setStatut(StatutCommande.PARTIELLEMENT_RECUE);
         // Créer une sous-ligne si la quantité est partielle
-        if (quantiteRecue < ligne.getQuantiteCommandee()) {
+        if (ligne.getSousLignes() != null ) {
             SousLigneCommande sousLigne = SousLigneCommande.builder()
                     .quantiteRecue(quantiteRecue)
                     .dateReception(dateReception)
                     .ligneCommande(ligne)
                     .build();
             // Vérifie si toutes les lignes sont reçues pour clôturer la commande
-            Commande commande = ligne.getCommande();
-            commande.setStatut(StatutCommande.PARTIELLEMENT_RECUE);
+            if (totalAvecNouvelle == ligne.getQuantiteCommandee()) {
+                commande.setStatut(StatutCommande.RECUE);
+            }else{
+                commande.setStatut(StatutCommande.PARTIELLEMENT_RECUE);
+            }
+
+
             sousLigneCommandeRepository.save(sousLigne);
         }
 
@@ -175,15 +200,14 @@ public class CommandeService {
             ligneCommandeRepository.save(ligne);
 
             // Vérifie si toutes les lignes sont reçues pour clôturer la commande
-            Commande commande = ligne.getCommande();
-            boolean toutesRecues = commande.getLignesCommande().stream()
-                    .allMatch(l -> l.getDateReception() != null ||
-                            (l.getSousLignes() != null && !l.getSousLignes().isEmpty()));
-            if (toutesRecues) {
-                commande.setStatut(StatutCommande.RECUE);
-                commandeRepository.save(commande);
-            }
+//            Commande commande = ligne.getCommande();
+
+            commande.setStatut(StatutCommande.RECUE);
+//
+
+
         }
+        commandeRepository.save(commande);
     }
 
 
