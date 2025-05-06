@@ -11,6 +11,10 @@ import org.jad.auth.repository.FournisseurCodeCounterRepository;
 import org.jad.auth.repository.FournisseurRepository;
 import org.jad.auth.repository.RoleRepository;
 import org.jad.auth.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -133,4 +137,10 @@ public class FournisseurService {
         dto.setCode(fournisseur.getCode());
         return dto;
     }
+
+    public Page<FournisseurDTO> getFournisseursAvecPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return fournisseurRepository.findAll(pageable).map(this::mapToDTO);
+    }
+
 }

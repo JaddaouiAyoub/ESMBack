@@ -3,6 +3,7 @@ package org.jad.auth.controller;
 import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.ProduitDTO;
 import org.jad.auth.service.ProduitService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +25,12 @@ public class ProduitController {
 
     // ➤ Récupérer tous les produits
     @GetMapping
-    public ResponseEntity<List<ProduitDTO>> getAllProduits() {
-        return ResponseEntity.ok(produitService.getAllProduits());
+    public ResponseEntity<Page<ProduitDTO>> getProduitsAvecPagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(produitService.getProduitsAvecPagination(page, size));
     }
+
 
     // ➤ Récupérer un produit par ID
     @GetMapping("/{id}")

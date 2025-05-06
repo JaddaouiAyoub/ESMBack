@@ -3,7 +3,7 @@ package org.jad.auth.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -11,15 +11,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HistoriqueCommande {
+public class HistoriqueReception {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String dateReception;
-    private String descriptionAction;
+    private String codeCommande;
 
-    @ManyToOne
-    private Commande commande;
+    private String nomProduit;
+
+    private int quantite;
+
+    private LocalDate dateReception;
+
+    private String raisonSocialFournisseur;
 }

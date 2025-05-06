@@ -10,6 +10,10 @@ import org.jad.auth.mapper.ProduitMapper;
 import org.jad.auth.repository.FournisseurRepository;
 import org.jad.auth.repository.LigneCommandeRepository;
 import org.jad.auth.repository.ProduitRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -112,4 +116,10 @@ public class ProduitService {
                 .map(ProduitMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public Page<ProduitDTO> getProduitsAvecPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return produitRepository.findAll(pageable).map(ProduitMapper::toDTO);
+    }
+
 }

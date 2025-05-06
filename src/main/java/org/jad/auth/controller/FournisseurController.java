@@ -3,6 +3,7 @@ package org.jad.auth.controller;
 import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.FournisseurDTO;
 import org.jad.auth.service.FournisseurService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,10 +26,18 @@ public class FournisseurController {
 
     // ➤ Obtenir tous les fournisseurs
     @GetMapping
+    public ResponseEntity<Page<FournisseurDTO>> getFournisseursAvecPagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return ResponseEntity.ok(fournisseurService.getFournisseursAvecPagination(page, size));
+    }
+    // ➤ Obtenir tous les fournisseurs
+    @GetMapping("/all")
     public ResponseEntity<List<FournisseurDTO>> getAllFournisseurs() {
         List<FournisseurDTO> fournisseurs = fournisseurService.getAllFournisseurs();
         return ResponseEntity.ok(fournisseurs);
     }
+
 
     // ➤ Obtenir un fournisseur par ID
     @GetMapping("/{id}")

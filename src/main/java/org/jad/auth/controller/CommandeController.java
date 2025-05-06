@@ -1,5 +1,6 @@
 package org.jad.auth.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.CommandeDTO;
 import org.jad.auth.dto.LigneCommandeModificationDTO;
 import org.jad.auth.dto.ReceptionRequest;
@@ -19,16 +20,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/commandes")
+@RequiredArgsConstructor
 public class CommandeController {
 
-    @Autowired
-    private CommandeService commandeService;
+    private final CommandeService commandeService;
 
-    @Autowired
-    private ProduitRepository produitRepository;
+    private final ProduitRepository produitRepository;
 
-    @Autowired
-    private FournisseurRepository fournisseurRepository;
+    private final FournisseurRepository fournisseurRepository;
 
     /**
      * Déclenche une commande automatique si stock == 0

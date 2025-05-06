@@ -1,11 +1,13 @@
 package org.jad.auth.service;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.CommandeDTO;
 import org.jad.auth.dto.LigneCommandeModificationDTO;
 import org.jad.auth.entity.*;
 import org.jad.auth.enums.StatutCommande;
 import org.jad.auth.repository.CommandeRepository;
+import org.jad.auth.repository.HistoriqueReceptionRepository;
 import org.jad.auth.repository.LigneCommandeRepository;
 import org.jad.auth.repository.SousLigneCommandeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +21,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CommandeService {
 
-    @Autowired
-    private CommandeRepository commandeRepository;
+    private final CommandeRepository commandeRepository;
 
-    @Autowired
-    private LigneCommandeRepository ligneCommandeRepository;
 
-    @Autowired
-    private BonCommandePdfService bonCommandePdfService;
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    private SousLigneCommandeRepository sousLigneCommandeRepository;
+    private final LigneCommandeRepository ligneCommandeRepository;
+
+    private final BonCommandePdfService bonCommandePdfService;
+    private final EmailService emailService;
+
+    private final SousLigneCommandeRepository sousLigneCommandeRepository;
+
+    private final HistoriqueReceptionRepository historiqueReceptionRepository;
     /**
      * Crée automatiquement une commande pour un produit à stock nul
      */
@@ -171,7 +173,7 @@ public class CommandeService {
         int totalAvecNouvelle = totalSousLignes + quantiteRecue;
 
         Commande commande = ligne.getCommande();
-
+        Produit produit=ligne.getProduit();
         if (totalAvecNouvelle > ligne.getQuantiteCommandee()) {
             throw new IllegalArgumentException("La quantité totale reçue dépasse la quantité commandée.");
         }
@@ -204,9 +206,17 @@ public class CommandeService {
 
             commande.setStatut(StatutCommande.RECUE);
 //
-
-
         }
+        produit.setQuantiteStock(produit.getQuantiteStock()+quantiteRecue);
+        historiqueReceptionRepository.save(HistoriqueReception.builder()
+                .codeCommande(ligne.getCommande().getCodeCommande())
+                .nomProduit(ligne.getProduit().getNom()) // selon ton entité
+                .quantite(quantiteRecue)
+                .dateReception(dateReception)
+                .raisonSocialFournisseur(ligne.getCommande().getFournisseur().getRaisonSociale()) // selon ton modèle
+                .build());
+
+
         commandeRepository.save(commande);
     }
 
