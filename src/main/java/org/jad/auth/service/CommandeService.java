@@ -143,18 +143,18 @@ public class CommandeService {
         commandeRepository.save(commande);
 
         // ✅ 1. Générer le PDF
-//        CommandeDTO commandeDTO = new CommandeDTO(commande); // ou manuellement si pas de mapper
-//        Map<String, Object> model = Map.of("commande", commandeDTO);
-//        File pdfFile = bonCommandePdfService.genererPdfCommande(model, "commande_" + commande.getCodeCommande());
-//        // ✅ 2. Envoyer le PDF par email (non implémenté ici)
-//        String fournisseurEmail = commande.getFournisseur().getEmail(); // Assure-toi que l'email existe dans l'entité Fournisseur
-//        String sujet = "Bon de commande mis à jour";
-//        String message = "Bonjour,\n\nVeuillez trouver ci-joint le bon de commande mis à jour.\n\nCordialement,\nEasyStock Maroc";
-//        emailService.envoyerEmailAvecPieceJointe(fournisseurEmail, sujet, message, pdfFile);
-        // ✅ 3. Supprimer le fichier temporaire
-//        if (pdfFile.exists()) {
-//            pdfFile.delete();
-//        }
+        CommandeDTO commandeDTO = new CommandeDTO(commande); // ou manuellement si pas de mapper
+        Map<String, Object> model = Map.of("commande", commandeDTO);
+        File pdfFile = bonCommandePdfService.genererPdfCommande(model, "commande_" + commande.getCodeCommande());
+        // ✅ 2. Envoyer le PDF par email (non implémenté ici)
+        String fournisseurEmail = commande.getFournisseur().getEmail(); // Assure-toi que l'email existe dans l'entité Fournisseur
+        String sujet = "Bon de commande mis à jour";
+        String message = "Bonjour,\n\nVeuillez trouver ci-joint le bon de commande mis à jour.\n\nCordialement,\nEasyStock Maroc";
+        emailService.envoyerEmailAvecPieceJointe(fournisseurEmail, sujet, message, pdfFile);
+//         ✅ 3. Supprimer le fichier temporaire
+        if (pdfFile.exists()) {
+            pdfFile.delete();
+        }
     }
 
     @Transactional
