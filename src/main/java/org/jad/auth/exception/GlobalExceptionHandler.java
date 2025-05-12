@@ -2,6 +2,7 @@ package org.jad.auth.exception;
 
 import org.jad.auth.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,13 +53,17 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResponse<Object> handleAllExceptions(Exception ex) {
         return ApiResponse.builder()
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error("An unexpected error occurred hhhhh")
+                .error("An unexpected error occurred")
                 .timestamp(LocalDateTime.now())
                 .build();
     }

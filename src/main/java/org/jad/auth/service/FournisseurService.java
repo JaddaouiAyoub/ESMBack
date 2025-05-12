@@ -3,6 +3,8 @@ package org.jad.auth.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.FournisseurDTO;
+import org.jad.auth.dto.FournisseurNomIdDTO;
+import org.jad.auth.dto.ProduitNomIdDTO;
 import org.jad.auth.entity.Fournisseur;
 import org.jad.auth.entity.FournisseurCodeCounter;
 import org.jad.auth.entity.RoleEntity;
@@ -141,6 +143,21 @@ public class FournisseurService {
     public Page<FournisseurDTO> getFournisseursAvecPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return fournisseurRepository.findAll(pageable).map(this::mapToDTO);
+    }
+
+    public List<FournisseurNomIdDTO> getAllFournisseurNomIdDTO() {
+        return fournisseurRepository.findAllNomId(); // Cette méthode doit être définie dans le repository
+    }
+
+    public Page<FournisseurDTO> getFournisseursFiltres(String raisonSociale, String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return fournisseurRepository
+                .findByRaisonSocialeContainingIgnoreCaseAndUsernameContainingIgnoreCase(
+                        raisonSociale != null ? raisonSociale : "",
+                        username != null ? username : "",
+                        pageable
+                )
+                .map(this::mapToDTO);
     }
 
 }

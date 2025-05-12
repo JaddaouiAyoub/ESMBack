@@ -16,6 +16,8 @@ public class ProduitMapper {
                 .quantiteStock(produit.getQuantiteStock())
                 .quantiteVendu(produit.getQuantiteVendu())
                 .reorderPoint(produit.getReorderPoint())
+                .stockInitiale(produit.getStockInitiale())
+                .leadTime(produit.getLeadTime())
                 .prix(produit.getPrix())
                 .fournisseurId(produit.getFournisseur() != null ? produit.getFournisseur().getId() : null)
                 .build();
@@ -31,6 +33,8 @@ public class ProduitMapper {
                 .quantiteStock(dto.getQuantiteStock())
                 .quantiteVendu(dto.getQuantiteVendu())
                 .reorderPoint(dto.getReorderPoint())
+                .stockInitiale(dto.getStockInitiale())
+                .leadTime(dto.getLeadTime())
                 .prix(dto.getPrix())
                 .fournisseur(fournisseur)
                 .build();

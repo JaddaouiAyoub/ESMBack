@@ -11,4 +11,6 @@ public interface CommandeRepository extends JpaRepository<Commande, Long> {
     Optional<Commande> findByCodeCommande(String codeCommande);
 
     List<Commande> findByStatut(StatutCommande statutCommande);
+
+    boolean existsByCodeCommande(String code);
 }

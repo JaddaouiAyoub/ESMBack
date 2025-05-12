@@ -2,6 +2,7 @@ package org.jad.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.ProduitDTO;
+import org.jad.auth.dto.ProduitNomIdDTO;
 import org.jad.auth.entity.Fournisseur;
 import org.jad.auth.entity.LigneCommande;
 import org.jad.auth.entity.Produit;
@@ -10,10 +11,13 @@ import org.jad.auth.mapper.ProduitMapper;
 import org.jad.auth.repository.FournisseurRepository;
 import org.jad.auth.repository.LigneCommandeRepository;
 import org.jad.auth.repository.ProduitRepository;
+import org.jad.auth.util.ProduitSpecifications;
 import org.springframework.data.domain.Page;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,6 +48,8 @@ public class ProduitService {
         produit.setQuantiteVendu(updatedProduitDTO.getQuantiteVendu());
         produit.setReorderPoint(updatedProduitDTO.getReorderPoint());
         produit.setPrix(updatedProduitDTO.getPrix());
+        produit.setLeadTime(updatedProduitDTO.getLeadTime());
+        produit.setStockInitiale(updatedProduitDTO.getStockInitiale());
         // pas besoin de toucher au fournisseur ici
         Produit savedProduit = produitRepository.save(produit);
         return ProduitMapper.toDTO(savedProduit);
@@ -120,6 +126,18 @@ public class ProduitService {
     public Page<ProduitDTO> getProduitsAvecPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return produitRepository.findAll(pageable).map(ProduitMapper::toDTO);
+    }
+    public Page<ProduitDTO> getProduitsFiltres(String nom, Boolean sousSeuil, Long fournisseurId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Specification<Produit> spec = ProduitSpecifications.filtrerProduits(nom, sousSeuil, fournisseurId);
+        return produitRepository.findAll(spec, pageable).map(ProduitMapper::toDTO);
+    }
+
+
+
+    // 👉 Méthode pour récupérer les noms et ids de tous les produits
+    public List<ProduitNomIdDTO> getAllProduitNomId() {
+        return produitRepository.findAllNomId(); // Cette méthode doit être définie dans le repository
     }
 
 }

@@ -187,6 +187,8 @@ public class CommandeService {
                     .build();
             // Vérifie si toutes les lignes sont reçues pour clôturer la commande
             if (totalAvecNouvelle == ligne.getQuantiteCommandee()) {
+                long leadTime = java.time.temporal.ChronoUnit.DAYS.between(ligne.getDateDexpeditionConfirmee(), dateReception);
+                commande.setLeadTime(leadTime);
                 commande.setStatut(StatutCommande.RECUE);
             }else{
                 commande.setStatut(StatutCommande.PARTIELLEMENT_RECUE);
@@ -200,7 +202,8 @@ public class CommandeService {
         if (quantiteRecue == ligne.getQuantiteCommandee()) {
             ligne.setDateReception(dateReception);
             ligneCommandeRepository.save(ligne);
-
+            long leadTime = java.time.temporal.ChronoUnit.DAYS.between(ligne.getDateDexpeditionConfirmee(), dateReception);
+            commande.setLeadTime(leadTime);
             // Vérifie si toutes les lignes sont reçues pour clôturer la commande
 //            Commande commande = ligne.getCommande();
 
@@ -224,8 +227,13 @@ public class CommandeService {
     /**
      * Génère un code de commande unique type "4501"
      */
-    private String generateCommandeCode() {
+    public synchronized String generateCommandeCode() {
         long count = commandeRepository.count() + 1;
-        return "45" + String.format("%02d", count);
+        String code = "45" + String.format("%04d", count);
+        while (commandeRepository.existsByCodeCommande(code)) {
+            count++;
+            code = "45" + String.format("%04d", count);
+        }
+        return code;
     }
 }

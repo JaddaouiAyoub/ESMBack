@@ -10,4 +10,5 @@ public interface LigneCommandeRepository extends JpaRepository<LigneCommande, Lo
     List<LigneCommande> findByCommandeId(Long commandeId);
 
     List<LigneCommande> findByProduit(Produit produit);
+    List<LigneCommande> findByProduitId(Long produitId);
 }

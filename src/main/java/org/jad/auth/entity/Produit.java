@@ -18,7 +18,11 @@ public class Produit {
     private int quantiteStock;
     private int quantiteVendu;
     private int reorderPoint; // seuil de réapprovisionnement
+    private int stockInitiale; // nouveau champ
+    private int leadTime; // temps d'arrivée en jours
     private double prix;
+    @Column(nullable = false)
+    private int stockSecurite = 10; // Valeur par défaut
 
     @ManyToOne
     @JoinColumn(name = "fournisseur_id")

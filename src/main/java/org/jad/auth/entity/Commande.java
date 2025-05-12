@@ -30,8 +30,6 @@ public class Commande {
 
     private double montantTotal;
 
-    private int quantity;
-
     @ManyToOne
     @JsonIgnoreProperties({"produits", "commandes"}) // empêche la boucle
     private Fournisseur fournisseur;
@@ -42,6 +40,8 @@ public class Commande {
     @OneToMany(mappedBy = "commande")
     @JsonIgnoreProperties("commande")
     private List<HistoriqueCommande> historiques;
+
+    private Long leadTime; // exprimé en jours
 //    @ManyToOne
 //    @JoinColumn(name = "client_id")
 //    private Client client;

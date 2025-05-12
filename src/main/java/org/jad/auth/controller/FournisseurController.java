@@ -2,6 +2,7 @@ package org.jad.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.FournisseurDTO;
+import org.jad.auth.dto.FournisseurNomIdDTO;
 import org.jad.auth.service.FournisseurService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,24 @@ public class FournisseurController {
     }
 
     // ➤ Obtenir tous les fournisseurs
-    @GetMapping
+    @GetMapping("/page")
     public ResponseEntity<Page<FournisseurDTO>> getFournisseursAvecPagination(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(fournisseurService.getFournisseursAvecPagination(page, size));
     }
+    @GetMapping
+    public ResponseEntity<Page<FournisseurDTO>> getFournisseursFiltres(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String raisonSociale,
+            @RequestParam(required = false) String username
+    ) {
+        return ResponseEntity.ok(
+                fournisseurService.getFournisseursFiltres(raisonSociale, username, page, size)
+        );
+    }
+
     // ➤ Obtenir tous les fournisseurs
     @GetMapping("/all")
     public ResponseEntity<List<FournisseurDTO>> getAllFournisseurs() {
@@ -57,5 +70,10 @@ public class FournisseurController {
     public ResponseEntity<FournisseurDTO> updateFournisseur(@PathVariable Long id, @RequestBody FournisseurDTO fournisseurDTO) {
         FournisseurDTO updatedFournisseur = fournisseurService.updateFournisseur(id, fournisseurDTO);
         return ResponseEntity.ok(updatedFournisseur);
+    }
+    @GetMapping("/nom-id")
+    public ResponseEntity<List<FournisseurNomIdDTO>> getFournisseursNomId() {
+        List<FournisseurNomIdDTO> fournisseurs = fournisseurService.getAllFournisseurNomIdDTO();
+        return ResponseEntity.ok(fournisseurs);
     }
 }

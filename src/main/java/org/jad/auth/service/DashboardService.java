@@ -7,6 +7,7 @@ import org.jad.auth.entity.LigneCommande;
 import org.jad.auth.enums.StatutCommande;
 import org.jad.auth.repository.CommandeRepository;
 import org.jad.auth.repository.ProduitRepository;
+import org.jad.auth.repository.VenteRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public class DashboardService {
 
     private final CommandeRepository commandeRepository;
     private final ProduitRepository produitRepository;
+    private final VenteRepository venteRepository;
 
     public DashboardDTO getDashboardData() {
         List<Commande> commandes = commandeRepository.findAll();
@@ -31,8 +33,8 @@ public class DashboardService {
         long enRetard = commandes.stream().filter(c ->
                 c.getStatut() != StatutCommande.RECUE &&
                         c.getLignesCommande().stream().anyMatch(lc ->
-                                lc.getDateLivraisonPrevue() != null &&
-                                lc.getDateLivraisonPrevue().isBefore(LocalDate.now())
+                                lc.getDateDexpeditionConfirmee() != null &&
+                                lc.getDateDexpeditionConfirmee().isBefore(LocalDate.now())
                         )
         ).count();
 
@@ -72,6 +74,10 @@ public class DashboardService {
                         Map.Entry::getKey, Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new));
 
+        double montantTotalVentes = venteRepository.findAll().stream()
+                .mapToDouble(v -> v.getPrixVenteUnitaire() * v.getQuantiteVendue())
+                .sum();
+
         return DashboardDTO.builder()
                 .totalCommandes(total)
                 .commandesEnCours(enCours)
@@ -82,6 +88,7 @@ public class DashboardService {
                 .montantTotalCommandes(montantTotal)
                 .produitsSousSeuil(produitsSousSeuil)
                 .commandesParStatut(parStatut)
+                .montantTotalVentes(montantTotalVentes)
                 .commandesParFournisseur(parFournisseur)
                 .topProduitsCommandes(topProduits)
                 .build();

@@ -2,6 +2,7 @@ package org.jad.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.ProduitDTO;
+import org.jad.auth.dto.ProduitNomIdDTO;
 import org.jad.auth.service.ProduitService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +25,29 @@ public class ProduitController {
     }
 
     // ➤ Récupérer tous les produits
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<ProduitDTO>> getProduitsAvecPagination(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
         return ResponseEntity.ok(produitService.getProduitsAvecPagination(page, size));
     }
+    @GetMapping
+    public ResponseEntity<Page<ProduitDTO>> getProduitsFiltres(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false, defaultValue = "") String sousSeuil,
+            @RequestParam(required = false) Long fournisseurId) {
+        Boolean sousSeuilBool = null;
+        if (!sousSeuil.isEmpty()) {
+            sousSeuilBool = Boolean.parseBoolean(sousSeuil);
+        }
+        return ResponseEntity.ok(
+
+                produitService.getProduitsFiltres(nom, sousSeuilBool, fournisseurId, page, size)
+        );
+    }
+
 
 
     // ➤ Récupérer un produit par ID
@@ -69,5 +87,11 @@ public class ProduitController {
     @GetMapping("/sous-seuil")
     public ResponseEntity<List<ProduitDTO>> getProduitsSousSeuil() {
         return ResponseEntity.ok(produitService.getProduitsSousSeuil());
+    }
+
+    // 👉 Endpoint pour récupérer tous les produits avec leur id et nom
+    @GetMapping("/nom-id")
+    public List<ProduitNomIdDTO> getAllProduitNomId() {
+        return produitService.getAllProduitNomId();
     }
 }
