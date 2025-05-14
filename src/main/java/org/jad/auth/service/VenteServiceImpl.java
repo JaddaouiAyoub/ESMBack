@@ -1,9 +1,11 @@
 package org.jad.auth.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jad.auth.dto.TopProduitVenduProjection;
 import org.jad.auth.dto.VenteRequestDTO;
 import org.jad.auth.dto.VenteResponseDTO;
+import org.jad.auth.entity.Fournisseur;
 import org.jad.auth.entity.LigneCommande;
 import org.jad.auth.entity.Produit;
 import org.jad.auth.entity.Vente;
@@ -26,7 +28,9 @@ public class VenteServiceImpl implements VenteService {
     private final VenteRepository venteRepository;
     private final ProduitRepository produitRepository;
     private final LigneCommandeRepository ligneCommandeRepository;
+    private final CommandeService commandeService;
     @Override
+    @Transactional
     public VenteResponseDTO enregistrerVente(VenteRequestDTO dto) {
         Produit produit = produitRepository.findById(dto.getProduitId())
                 .orElseThrow(() -> new RuntimeException("Produit introuvable"));
@@ -40,7 +44,10 @@ public class VenteServiceImpl implements VenteService {
         produit.setQuantiteVendu(produit.getQuantiteVendu() + dto.getQuantite());
         produit.setReorderPoint(calculerROP(produit.getId()));
         produitRepository.save(produit);
-
+        Fournisseur fournisseur = produit.getFournisseur();
+        if(produit.getQuantiteStock()<produit.getReorderPoint()){
+            commandeService.creerCommandeAutomatique(produit, fournisseur);
+        }
         Vente vente = Vente.builder()
                 .produit(produit)
                 .quantiteVendue(dto.getQuantite())

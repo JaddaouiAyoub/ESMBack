@@ -51,6 +51,9 @@ public class ProduitService {
         produit.setLeadTime(updatedProduitDTO.getLeadTime());
         produit.setStockInitiale(updatedProduitDTO.getStockInitiale());
         // pas besoin de toucher au fournisseur ici
+        if(produit.getQuantiteStock()<produit.getReorderPoint()){
+            commandeService.creerCommandeAutomatique(produit, produit.getFournisseur());
+        }
         Produit savedProduit = produitRepository.save(produit);
         return ProduitMapper.toDTO(savedProduit);
     }
@@ -68,9 +71,7 @@ public class ProduitService {
             fournisseurRepository.save(fournisseur);
         }
         List<LigneCommande> lignes = ligneCommandeRepository.findByProduit(produit);
-        for (LigneCommande ligne : lignes) {
-            ligneCommandeRepository.delete(ligne);
-        }
+        ligneCommandeRepository.deleteAll(lignes);
         produitRepository.delete(produit);
     }
 
